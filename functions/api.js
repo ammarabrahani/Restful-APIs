@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/functions/api", async (req, res) => {
+app.use("/.netlify/functions/api", async (req, res) => {
   const posts = await Users.find();
   console.log(posts);
   res.send(posts);
