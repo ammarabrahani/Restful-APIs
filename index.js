@@ -17,7 +17,7 @@ try {
   );
   console.log(`MongoDB Connected: ${conn.connection.host}`);
 
-  app.use("/", async (req, res) => {
+  app.use("/functions/api", async (req, res) => {
     const posts = await Users.find();
     console.log(posts);
     res.send(posts);
