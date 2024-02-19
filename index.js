@@ -1,19 +1,31 @@
 import express, { Router } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
-import Users from "../Models/users.js";
+import cors from "cors";
+import Users from "./Models/users.js";
 
 dotenv.config();
 
 const app = express();
 
+app.use(cors());
+
 app.use(express.json());
 
-app.use("/.netlify/functions/api", async (req, res) => {
-  const posts = await Users.find();
-  console.log(posts);
-  res.send(posts);
+app.use("/users", async (req, res) => {
+  const users = await Users.find();
+  console.log(users);
+  res.send(users);
+});
+
+app.use("/post", async (req, res) => {
+  const data = new Users({ email: req.body.email, phone: req.body.phone });
+  try {
+    data.save();
+    res.status(201).json({ message: "successful" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 try {
   const conn = await mongoose.connect(
