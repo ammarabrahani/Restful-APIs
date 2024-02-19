@@ -12,13 +12,12 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use("/users", async (req, res) => {
+app.get("/", async (req, res) => {
   const users = await Users.find();
   console.log(users);
   res.send(users);
 });
-
-app.use("/post", async (req, res) => {
+app.post("/", async (req, res) => {
   const data = new Users({ email: req.body.email, phone: req.body.phone });
   try {
     data.save();
