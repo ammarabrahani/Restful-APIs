@@ -1,21 +1,19 @@
 import mongoose from "mongoose";
-const { Schema } = mongoose;
+import bcrypt from "bcryptjs";
 
-const usersSchema = new Schema({
-  id: Schema.ObjectId,
-  name: String,
-  email: {
-    type: String,
-    unique: true, // If email should be unique
-  },
-  phone: String,
-  Address: String,
-  profile: {
-    education: String,
-    age: String,
-  },
+const userSchema = new mongoose.Schema({
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
 });
 
-const users = mongoose.model("users", usersSchema);
+// Middleware to hash password before saving user
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
 
-export default users;
+const User = mongoose.model("User", userSchema);
+export default User;
