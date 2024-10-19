@@ -30,7 +30,8 @@ export const signup = async (req, res) => {
     console.log("Before creating user");
     user = new User({
       email,
-      password: hashedPassword, // Store hashed password
+      password: password,
+      hashpassword: hashedPassword, // Store hashed password
     });
     console.log("User created");
 
@@ -81,26 +82,46 @@ export const signup = async (req, res) => {
 };
 
 // Login User
+
+// Login Controller
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Find the user by email
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+    if (!user) {
+      return res.status(400).json({ msg: "User not found" });
+    }
 
-    if (!user.isVerified)
-      return res.status(401).json({ msg: "Please verify your email" });
+    // Log to see the password being compared
+    console.log("Plain password:", password);
+    console.log("Hashed password in DB:", user.password);
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+    // Compare the provided password with the hashed password in the DB
+    const isMatch = password === user?.password;
+
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user?._id, email: user?.email }, // Add more fields if necessary
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Return token and user details (if needed)
+    return res.json({
+      token,
+      user: { id: user._id, email: user.email, name: user.name },
     });
-
-    res.json({ token });
   } catch (err) {
-    res.status(500).send("Server error");
+    console.error("Error during login:", err.message);
+    return res.status(500).json({ msg: "Server error" });
   }
 };
 
@@ -108,9 +129,13 @@ export const login = async (req, res) => {
 export const verifyUser = async (req, res) => {
   const token = req.params.token;
 
+  console.log(req.params, "req.params");
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
+
+    console.log(user, "user");
 
     if (!user) return res.status(400).json({ msg: "Invalid token" });
 
