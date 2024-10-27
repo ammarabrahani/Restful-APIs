@@ -60,7 +60,7 @@ export const signup = async (req, res) => {
       process.env.EMAIL_PASSWORD
     );
 
-    const verificationUrl = `${process.env.BASE_URL}/verify/${token}`;
+    const verificationUrl = `http://localhost:3000/verify/${token}`;
     const mailOptions = {
       from: process.env.EMAIL,
       to: user.email,
