@@ -3,6 +3,8 @@ import Project from "../Models/project.js";
 // Create a new project
 export const createProject = async (req, res) => {
   try {
+    console.log("innn");
+
     const { name, description, startDate, endDate, status } = req.body;
 
     // Ensure that required fields are provided

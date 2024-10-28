@@ -11,7 +11,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Create a new project
-router.post("/projects", authMiddleware, createProject);
+router.post("/projects", createProject);
 
 // Get all projects for the logged-in user
 router.get("/projects", authMiddleware, getProjectsByUser);
