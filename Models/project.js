@@ -20,13 +20,20 @@ const ProjectSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["Not Started", "In Progress", "Completed"],
+    enum: [
+      "Not Started",
+      "In Progress",
+      "Completed",
+      "Testing",
+      "In Deployment",
+      "Approved",
+    ],
     default: "Not Started",
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "User", // Reference the User model
-    required: true,
+    // ref: "User", // Reference the User model
+    // required: true,
   },
   createdAt: {
     type: Date,
@@ -38,5 +45,5 @@ const ProjectSchema = new Schema({
   },
 });
 
-const Project = mongoose.model("Project", ProjectSchema);
+const Project = mongoose.model("Projects", ProjectSchema);
 export default Project;
